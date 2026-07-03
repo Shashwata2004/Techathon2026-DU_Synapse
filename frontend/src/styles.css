@@ -36,6 +36,7 @@ button {
 }
 
 .connection,
+.toggle-error,
 .last-updated {
   display: inline-flex;
   align-items: center;
@@ -63,6 +64,12 @@ button {
 
 .connection.offline {
   color: #b42318;
+}
+
+.toggle-error {
+  color: #b42318;
+  border-color: #fecaca;
+  background: #fff1f2;
 }
 
 .dashboard-grid {
@@ -736,6 +743,9 @@ button {
 
 .floorplan-image-card {
   min-width: 0;
+  display: grid;
+  justify-items: start;
+  gap: 14px;
 }
 
 .floorplan-image-wrap {
@@ -773,10 +783,31 @@ button {
   background: transparent;
   transform: translate(-50%, -50%);
   pointer-events: auto;
+  cursor: pointer;
+  transition: filter 160ms ease, opacity 160ms ease, transform 160ms ease;
+}
+
+.live-device-overlay:disabled {
+  cursor: progress;
+}
+
+.live-device-overlay:not(:disabled):hover {
+  transform: translate(-50%, -50%) scale(1.06);
+}
+
+.live-device-overlay:focus-visible {
+  outline: 3px solid rgba(46, 144, 250, 0.8);
+  outline-offset: 4px;
+  border-radius: 50%;
 }
 
 .live-device-overlay.light {
   width: 5.1%;
+}
+
+.live-device-overlay.fan {
+  width: 9.2%;
+  pointer-events: auto;
 }
 
 .ceiling-light {
@@ -788,6 +819,7 @@ button {
   background:
     radial-gradient(circle at 38% 30%, rgba(255, 255, 255, 0.98) 0 16%, rgba(255, 245, 155, 0.96) 33%, rgba(232, 205, 72, 0.86) 68%, rgba(166, 145, 55, 0.55) 100%);
   box-shadow: inset 0 2px 3px rgba(255, 255, 255, 0.78), 0 1px 4px rgba(61, 51, 18, 0.18);
+  pointer-events: none;
 }
 
 .live-device-overlay.light.is-on .ceiling-light {
@@ -806,74 +838,101 @@ button {
   opacity: 0.62;
 }
 
+.live-device-overlay.light:not(:disabled):hover .ceiling-light {
+  border-color: rgba(255, 225, 86, 0.9);
+  box-shadow:
+    inset 0 2px 4px rgba(255, 255, 255, 0.86),
+    0 0 12px rgba(255, 232, 111, 0.7),
+    0 0 0 4px rgba(255, 216, 74, 0.18);
+}
+
 .ceiling-fan {
   position: relative;
   display: block;
-  width: 84%;
+  width: 94%;
   aspect-ratio: 1;
-  filter: drop-shadow(0 2px 1px rgba(38, 22, 8, 0.24));
+  filter: drop-shadow(0 2px 1px rgba(38, 22, 8, 0.28));
+  pointer-events: none;
 }
 
-.fan-blades {
+.live-device-overlay.fan:not(:disabled):hover .ceiling-fan {
+  filter:
+    drop-shadow(0 2px 1px rgba(38, 22, 8, 0.28))
+    drop-shadow(0 0 6px rgba(142, 95, 45, 0.34));
+}
+
+.live-device-overlay.is-pending {
+  opacity: 0.74;
+}
+
+.fan-rotor {
   position: absolute;
-  inset: 0;
+  inset: 2%;
   transform-origin: 50% 50%;
 }
 
-.ceiling-fan.is-on .fan-blades {
-  animation: fan-spin 0.72s linear infinite;
+.ceiling-fan.is-on .fan-rotor {
+  animation: fan-spin 0.68s linear infinite;
 }
 
 .ceiling-fan.is-off {
-  opacity: 0.66;
-  filter: grayscale(0.28) drop-shadow(0 1px 1px rgba(38, 22, 8, 0.18));
+  opacity: 0.78;
+  filter: grayscale(0.12) drop-shadow(0 1px 1px rgba(38, 22, 8, 0.18));
 }
 
 .fan-blade {
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 45%;
+  width: 48%;
   height: 14%;
-  border-radius: 80% 20% 45% 55%;
+  border-radius: 999px 42% 42% 999px;
   background:
-    linear-gradient(90deg, #43250e 0%, #71502f 46%, #331b09 100%);
-  box-shadow: inset 0 1px 2px rgba(255, 235, 190, 0.22), 0 1px 1px rgba(32, 18, 6, 0.25);
-  transform-origin: 0% 50%;
+    radial-gradient(ellipse at 78% 45%, rgba(149, 104, 56, 0.82) 0 20%, transparent 46%),
+    linear-gradient(90deg, #2c1607 0%, #6e4724 48%, #43240d 100%);
+  box-shadow:
+    inset 0 1px 2px rgba(255, 229, 181, 0.2),
+    inset 0 -1px 1px rgba(23, 13, 5, 0.28),
+    0 1px 1px rgba(32, 18, 6, 0.25);
+  transform-origin: 4% 50%;
 }
 
-.blade-one {
-  transform: rotate(-28deg) translateX(10%);
+.fan-blade-one {
+  transform: rotate(-30deg) translateX(7%);
 }
 
-.blade-two {
-  transform: rotate(92deg) translateX(10%);
+.fan-blade-two {
+  transform: rotate(90deg) translateX(7%);
 }
 
-.blade-three {
-  transform: rotate(212deg) translateX(10%);
+.fan-blade-three {
+  transform: rotate(210deg) translateX(7%);
 }
 
 .fan-cap {
   position: absolute;
   left: 50%;
   top: 50%;
+  z-index: 2;
   width: 28%;
   aspect-ratio: 1;
   border-radius: 50%;
-  background: radial-gradient(circle at 36% 30%, #8b6539 0 18%, #5b3515 48%, #2c1606 100%);
-  box-shadow: inset 0 1px 2px rgba(255, 237, 197, 0.28), 0 2px 2px rgba(32, 18, 6, 0.32);
+  background: radial-gradient(circle at 36% 30%, #8d6232 0 18%, #583313 50%, #261104 100%);
+  box-shadow:
+    inset 0 1px 2px rgba(255, 237, 197, 0.3),
+    0 2px 2px rgba(32, 18, 6, 0.34);
   transform: translate(-50%, -50%);
 }
 
 .fan-stem {
   position: absolute;
   left: 50%;
-  top: 57%;
-  width: 10%;
-  height: 32%;
+  top: 56%;
+  z-index: 1;
+  width: 11%;
+  height: 35%;
   border-radius: 999px;
-  background: linear-gradient(90deg, #2a1405, #633b18 48%, #2a1405);
+  background: linear-gradient(90deg, #241004, #654019 48%, #241004);
   transform: translateX(-50%);
   box-shadow: 0 1px 1px rgba(32, 18, 6, 0.24);
 }
@@ -920,6 +979,137 @@ button {
   color: #52606d;
   font-size: 13px;
   line-height: 1.55;
+}
+
+.room-wise-devices-strip {
+  width: min(390px, 100%);
+  padding: 8px;
+  border: 2px solid #b5b9bd;
+  border-radius: 6px;
+  background: #ffffff;
+  box-shadow: 0 5px 12px rgba(16, 24, 40, 0.08);
+}
+
+.room-wise-devices-strip h3 {
+  position: relative;
+  margin: 0 0 6px;
+  color: #24282b;
+  font-size: 14px;
+  font-weight: 900;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.room-wise-devices-strip h3::before,
+.room-wise-devices-strip h3::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 54px;
+  height: 1px;
+  background: #b5b9bd;
+}
+
+.room-wise-devices-strip h3::before {
+  left: 0;
+}
+
+.room-wise-devices-strip h3::after {
+  right: 0;
+}
+
+.room-wise-device-boxes {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.room-wise-device-box {
+  display: grid;
+  justify-items: center;
+  min-height: 66px;
+  padding: 8px 6px;
+  border: 1px solid #b5b9bd;
+  color: #1f2933;
+  font-size: 12px;
+  font-weight: 850;
+  text-align: center;
+  line-height: 1.25;
+}
+
+.room-wise-device-box strong {
+  margin-bottom: 4px;
+  font-size: 10px;
+  text-transform: uppercase;
+}
+
+.room-wise-device-box.drawing {
+  background: #f6e89f;
+}
+
+.room-wise-device-box.work-one {
+  background: #cce2ec;
+}
+
+.room-wise-device-box.work-two {
+  background: #d5eac9;
+}
+
+.floorplan-legend-card {
+  padding: 18px 14px 20px;
+}
+
+.floorplan-legend-list {
+  display: grid;
+  gap: 18px;
+}
+
+.floorplan-legend-item {
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  align-items: center;
+  gap: 10px;
+  min-height: 40px;
+  color: #30363d;
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.legend-fan-symbol,
+.legend-light-symbol,
+.legend-door-symbol,
+.legend-window-symbol {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+}
+
+.legend-fan-symbol .ceiling-fan {
+  width: 40px;
+}
+
+.legend-light-symbol .ceiling-light {
+  width: 27px;
+}
+
+.legend-door-symbol {
+  width: 34px;
+  height: 34px;
+  border-left: 2px solid #6f7478;
+  border-bottom: 2px solid #6f7478;
+  border-radius: 0 0 0 34px;
+  background:
+    radial-gradient(circle at 0 100%, transparent 0 69%, rgba(111, 116, 120, 0.46) 70% 72%, transparent 73%);
+}
+
+.legend-window-symbol {
+  width: 38px;
+  height: 10px;
+  border: 1px solid #8ea5aa;
+  background:
+    linear-gradient(#e5f7fb 0 33%, #9cced8 34% 66%, #e5f7fb 67% 100%);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.7);
 }
 
 .side-stack {

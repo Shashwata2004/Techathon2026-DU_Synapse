@@ -1,5 +1,5 @@
-import React from "react";
-import { RotateCcw, Siren, Wifi, WifiOff, Zap } from "lucide-react";
+import React, { useState } from "react";
+import { Wifi, WifiOff } from "lucide-react";
 import { postDemo } from "./api/client";
 import AlertsPanel from "./components/AlertsPanel";
 import DeviceStatusPanel from "./components/DeviceStatusPanel";
@@ -17,10 +17,27 @@ function connectionLabel(connection) {
 
 export default function App() {
   const { state, connection, setState } = useLiveState();
+  const [pendingDeviceIds, setPendingDeviceIds] = useState(() => new Set());
+  const [toggleError, setToggleError] = useState("");
 
-  async function runDemoAction(path) {
-    const nextState = await postDemo(path);
-    setState(nextState);
+  async function toggleDevice(deviceId) {
+    if (pendingDeviceIds.has(deviceId)) return;
+
+    setToggleError("");
+    setPendingDeviceIds((current) => new Set(current).add(deviceId));
+
+    try {
+      const nextState = await postDemo(`/api/demo/toggle/${encodeURIComponent(deviceId)}`);
+      setState(nextState);
+    } catch {
+      setToggleError("Could not toggle that device. Check the backend connection.");
+    } finally {
+      setPendingDeviceIds((current) => {
+        const next = new Set(current);
+        next.delete(deviceId);
+        return next;
+      });
+    }
   }
 
   if (!state) {
@@ -39,33 +56,19 @@ export default function App() {
           {connection === "connected" ? <Wifi size={18} /> : <WifiOff size={18} />}
           <span>{connectionLabel(connection)}</span>
         </div>
+        {toggleError ? (
+          <div className="toggle-error" role="status">
+            {toggleError}
+          </div>
+        ) : null}
         <div className="last-updated">Updated {new Date(state.lastUpdated).toLocaleTimeString()}</div>
       </div>
 
       <div className="dashboard-grid">
-        <OfficeLayout rooms={state.rooms} />
+        <OfficeLayout rooms={state.rooms} onToggleDevice={toggleDevice} pendingDeviceIds={pendingDeviceIds} />
         <aside className="side-stack">
           <PowerPanel state={state} />
           <AlertsPanel alerts={state.activeAlerts} />
-          <section className="panel demo-panel">
-            <div className="panel-title">
-              <h2>Demo Controls</h2>
-            </div>
-            <div className="demo-actions">
-              <button onClick={() => runDemoAction("/api/demo/set-room-all-on/work-room-2")}>
-                <Zap size={16} />
-                Work Room 2 ON
-              </button>
-              <button onClick={() => runDemoAction("/api/demo/trigger-after-hours-alert")}>
-                <Siren size={16} />
-                Trigger Alert
-              </button>
-              <button onClick={() => runDemoAction("/api/demo/reset")}>
-                <RotateCcw size={16} />
-                Reset
-              </button>
-            </div>
-          </section>
         </aside>
       </div>
 
