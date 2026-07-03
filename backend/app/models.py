@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from datetime import datetime
-from typing import Literal
+from typing import Literal, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -23,7 +25,7 @@ class Device(ApiModel):
     wattage: int
     current_power: int = Field(alias="currentPower")
     last_changed: datetime = Field(alias="lastChanged")
-    on_since: datetime | None = Field(alias="onSince")
+    on_since: Optional[datetime] = Field(alias="onSince")
 
 
 class Room(ApiModel):
@@ -54,7 +56,7 @@ class UsageResponse(ApiModel):
     estimated_kwh_today: float = Field(alias="estimatedKwhToday")
     active_device_count: int = Field(alias="activeDeviceCount")
     total_device_count: int = Field(alias="totalDeviceCount")
-    highest_room: str | None = Field(default=None, alias="highestRoom")
+    highest_room: Optional[str] = Field(default=None, alias="highestRoom")
 
 
 class SystemState(ApiModel):

@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 import os
+from typing import Optional
 
 import discord
 from discord.ext import commands, tasks
@@ -44,7 +47,7 @@ async def status_command(ctx: commands.Context) -> None:
 
 
 @bot.command(name="room")
-async def room_command(ctx: commands.Context, room_name: str | None = None) -> None:
+async def room_command(ctx: commands.Context, room_name: Optional[str] = None) -> None:
     if not room_name:
         await ctx.reply("Tell me a room to check. Try: drawing, work1, or work2.", mention_author=False)
         return
