@@ -35,8 +35,8 @@ def _time_env(name: str, default: str) -> time:
 class Settings:
     backend_host: str = os.getenv("BACKEND_HOST", "127.0.0.1")
     backend_port: int = _int_env("BACKEND_PORT", 8000)
-    simulation_enabled: bool = _bool_env("SIMULATION_ENABLED", True)
-    simulation_interval_seconds: int = _int_env("SIMULATION_INTERVAL_SECONDS", 5)
+    simulation_enabled: bool = _bool_env("SIMULATION_ENABLED", False)
+    simulation_interval_seconds: int = _int_env("SIMULATION_INTERVAL_SECONDS", 15)
     office_hours_start: time = _time_env("OFFICE_HOURS_START", "09:00")
     office_hours_end: time = _time_env("OFFICE_HOURS_END", "17:00")
     cors_allow_origins: tuple[str, ...] = ("*",)

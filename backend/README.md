@@ -2,6 +2,15 @@
 
 FastAPI is the single source of truth for all simulated device state, usage totals, alerts, REST APIs, and WebSocket updates.
 
+For stable demos, run with:
+
+```env
+SIMULATION_ENABLED=false
+SIMULATION_INTERVAL_SECONDS=15
+```
+
+Demo endpoints still work when simulation is disabled, and WebSocket broadcasts still happen after demo controls change device state.
+
 ## Run
 
 ```bash

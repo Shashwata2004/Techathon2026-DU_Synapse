@@ -50,8 +50,8 @@ Copy `.env.example` to `.env` where needed and fill only real secrets.
 ```env
 BACKEND_HOST=127.0.0.1
 BACKEND_PORT=8000
-SIMULATION_ENABLED=true
-SIMULATION_INTERVAL_SECONDS=5
+SIMULATION_ENABLED=false
+SIMULATION_INTERVAL_SECONDS=15
 OFFICE_HOURS_START=09:00
 OFFICE_HOURS_END=17:00
 
@@ -137,7 +137,9 @@ Local demo endpoints:
 
 ## Simulation Logic
 
-The backend simulator runs every `SIMULATION_INTERVAL_SECONDS`, toggles one or two devices, updates timestamps and `onSince`, recalculates watts and kWh, evaluates alerts, and broadcasts full state to connected dashboards.
+For the final demo, keep `SIMULATION_ENABLED=false` and use the dashboard demo controls to change device states manually. This keeps the dashboard and Discord responses stable and predictable.
+
+If `SIMULATION_ENABLED=true`, the backend simulator runs every `SIMULATION_INTERVAL_SECONDS`, toggles exactly one device, updates timestamps and `onSince`, recalculates watts and kWh, evaluates alerts, and broadcasts only when state actually changes. The default interval is `15` seconds.
 
 Energy estimate:
 
@@ -159,6 +161,15 @@ The diagrams are not Mermaid-based.
 ## Demo
 
 Use `docs/demo-script.md` for a concise under-3-minute demo flow.
+
+Recommended demo settings:
+
+```env
+SIMULATION_ENABLED=false
+SIMULATION_INTERVAL_SECONDS=15
+```
+
+Then use the dashboard buttons to turn devices on, trigger alerts, and reset the system at predictable moments.
 
 ## Team Member Contributions
 

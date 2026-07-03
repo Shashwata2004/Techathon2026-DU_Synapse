@@ -29,6 +29,11 @@ async def publish_state() -> None:
     await websockets.broadcast(store.get_state().model_dump(mode="json", by_alias=True))
 
 
+async def publish_if_changed(previous_revision: int) -> None:
+    if store.revision != previous_revision:
+        await publish_state()
+
+
 def require_local_demo_request(request: Request) -> None:
     host = request.client.host if request.client else ""
     if host not in {"127.0.0.1", "::1", "localhost"}:
@@ -93,53 +98,59 @@ async def websocket_endpoint(websocket: WebSocket):
 
 @app.post("/api/demo/toggle/{device_id}", dependencies=[Depends(require_local_demo_request)])
 async def demo_toggle(device_id: str):
+    previous_revision = store.revision
     try:
         state = store.toggle_device(device_id)
     except KeyError as exc:
         raise HTTPException(status_code=404, detail="Unknown device.") from exc
-    await publish_state()
+    await publish_if_changed(previous_revision)
     return state
 
 
 @app.post("/api/demo/set-device/{device_id}", dependencies=[Depends(require_local_demo_request)])
 async def demo_set_device(device_id: str, body: SetDeviceRequest):
+    previous_revision = store.revision
     try:
         state = store.set_device(device_id, body.status)
     except KeyError as exc:
         raise HTTPException(status_code=404, detail="Unknown device.") from exc
-    await publish_state()
+    await publish_if_changed(previous_revision)
     return state
 
 
 @app.post("/api/demo/set-room-all-on/{room_id}", dependencies=[Depends(require_local_demo_request)])
 async def demo_set_room_all_on(room_id: str):
+    previous_revision = store.revision
     try:
         state = store.set_room_status(room_id, "ON")
     except KeyError as exc:
         raise HTTPException(status_code=404, detail="Unknown room. Try: drawing, work1, or work2.") from exc
-    await publish_state()
+    await publish_if_changed(previous_revision)
     return state
 
 
 @app.post("/api/demo/set-room-all-off/{room_id}", dependencies=[Depends(require_local_demo_request)])
 async def demo_set_room_all_off(room_id: str):
+    previous_revision = store.revision
     try:
         state = store.set_room_status(room_id, "OFF")
     except KeyError as exc:
         raise HTTPException(status_code=404, detail="Unknown room. Try: drawing, work1, or work2.") from exc
-    await publish_state()
+    await publish_if_changed(previous_revision)
     return state
 
 
 @app.post("/api/demo/trigger-after-hours-alert", dependencies=[Depends(require_local_demo_request)])
 async def demo_trigger_after_hours_alert():
+    previous_revision = store.revision
     state = store.trigger_after_hours_alert()
-    await publish_state()
+    await publish_if_changed(previous_revision)
     return state
 
 
 @app.post("/api/demo/reset", dependencies=[Depends(require_local_demo_request)])
 async def demo_reset():
+    previous_revision = store.revision
     state = store.reset()
-    await publish_state()
+    await publish_if_changed(previous_revision)
     return state

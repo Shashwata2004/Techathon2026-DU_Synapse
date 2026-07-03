@@ -10,6 +10,15 @@ People leave office lights and fans on after work. This project monitors the off
 
 Show `docs/diagrams/system-diagram.png`. Explain that simulated devices feed one FastAPI backend. The dashboard uses WebSocket updates, and the Discord bot reads the same backend through REST.
 
+For the final recording, use:
+
+```env
+SIMULATION_ENABLED=false
+SIMULATION_INTERVAL_SECONDS=15
+```
+
+This keeps the state stable while you use demo controls manually.
+
 ## 0:45-1:35 Dashboard
 
 Show the office layout, live device status, total watts, room-wise watts, estimated kWh, and alert panel. Point out glowing lights and spinning fans.

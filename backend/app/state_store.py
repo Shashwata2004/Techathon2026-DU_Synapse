@@ -40,6 +40,7 @@ class StateStore:
         self._last_energy_update = self._now()
         self._last_updated = self._last_energy_update
         self._force_after_hours_alert = False
+        self._revision = 0
         self.reset()
 
     def reset(self) -> SystemState:
@@ -52,6 +53,7 @@ class StateStore:
             self._last_energy_update = now
             self._last_updated = now
             self._force_after_hours_alert = False
+            self._revision = 0
 
             for room_id, room_name, _purpose in ROOMS:
                 for index in range(1, 3):
@@ -60,7 +62,13 @@ class StateStore:
                     self._create_device(room_id, room_name, "light", index, 15, now)
 
             self._evaluate_alerts(now)
+            self._revision += 1
             return self.get_state()
+
+    @property
+    def revision(self) -> int:
+        with self._lock:
+            return self._revision
 
     def get_state(self) -> SystemState:
         with self._lock:
@@ -121,31 +129,43 @@ class StateStore:
 
     def set_device(self, device_id: str, status: DeviceStatus) -> SystemState:
         with self._lock:
-            now = self._prepare_update()
             device = self._get_device(device_id)
-            if device.status != status:
-                device.status = status
-                device.current_power = device.wattage if status == "ON" else 0
-                device.last_changed = now
-                device.on_since = now if status == "ON" else None
-            return self._finish_update(now)
+            if device.status == status:
+                return self.get_state()
+
+            now = self._prepare_update()
+            device.status = status
+            device.current_power = device.wattage if status == "ON" else 0
+            device.last_changed = now
+            device.on_since = now if status == "ON" else None
+            return self._finish_update(now, changed=True)
 
     def set_room_status(self, room_alias: str, status: DeviceStatus) -> SystemState:
         with self._lock:
-            now = self._prepare_update()
             room_id = self.resolve_room_id(room_alias)
+            changed = any(device.room_id == room_id and device.status != status for device in self._devices.values())
+            if not changed:
+                return self.get_state()
+
+            now = self._prepare_update()
             for device in self._devices.values():
                 if device.room_id == room_id and device.status != status:
                     device.status = status
                     device.current_power = device.wattage if status == "ON" else 0
                     device.last_changed = now
                     device.on_since = now if status == "ON" else None
-            return self._finish_update(now)
+            return self._finish_update(now, changed=True)
 
     def trigger_after_hours_alert(self) -> SystemState:
         with self._lock:
+            changed = not self._force_after_hours_alert
             self._force_after_hours_alert = True
-            return self.set_room_status("work-room-2", "ON")
+            before_revision = self._revision
+            state = self.set_room_status("work-room-2", "ON")
+            if self._revision == before_revision and changed:
+                now = self._prepare_update()
+                return self._finish_update(now, changed=True)
+            return state
 
     def resolve_room_id(self, room_alias: str) -> str:
         normalized = room_alias.strip().lower()
@@ -207,9 +227,13 @@ class StateStore:
         self._last_energy_update = now
         return now
 
-    def _finish_update(self, now: datetime) -> SystemState:
-        self._last_updated = now
+    def _finish_update(self, now: datetime, changed: bool) -> SystemState:
+        before_alerts = self._alert_signature()
         self._evaluate_alerts(now)
+        alerts_changed = before_alerts != self._alert_signature()
+        if changed or alerts_changed:
+            self._last_updated = now
+            self._revision += 1
         return self.get_state()
 
     def _evaluate_alerts(self, now: datetime) -> None:
@@ -229,6 +253,14 @@ class StateStore:
         if device_id not in self._devices:
             raise KeyError(device_id)
         return self._devices[device_id]
+
+    def _alert_signature(self) -> tuple[tuple[str, str, tuple[str, ...]], ...]:
+        return tuple(
+            sorted(
+                (alert.id, alert.message, tuple(alert.affected_devices))
+                for alert in self._active_alerts.values()
+            )
+        )
 
     @staticmethod
     def _now() -> datetime:

@@ -48,6 +48,17 @@ def test_on_since_and_last_changed_follow_status_changes() -> None:
     assert off_device.current_power == 0
 
 
+def test_noop_device_set_does_not_advance_revision() -> None:
+    store = StateStore(replace(settings, simulation_enabled=False))
+    initial_revision = store.revision
+
+    store.set_device("drawing-room-fan-1", "OFF")
+    assert store.revision == initial_revision
+
+    store.set_device("drawing-room-fan-1", "ON")
+    assert store.revision == initial_revision + 1
+
+
 def test_room_aliases_work() -> None:
     store = StateStore(replace(settings, simulation_enabled=False))
 

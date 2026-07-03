@@ -32,6 +32,8 @@ OPENAI_API_KEY=
 
 `OPENAI_API_KEY` and `DISCORD_ALERT_CHANNEL_ID` are optional. Without them, the core `!status`, `!room`, and `!usage` commands still work.
 
+The bot is command-driven: `!status`, `!room`, and `!usage` each fetch once from the backend and reply. Optional proactive alert posting polls alerts every 45 seconds only when `DISCORD_ALERT_CHANNEL_ID` is configured.
+
 ## Commands
 
 - `!status`

@@ -23,10 +23,11 @@ class DeviceSimulator:
             if not devices:
                 continue
 
-            sample_size = 1 if random.random() < 0.8 else 2
-            for device in random.sample(devices, k=min(sample_size, len(devices))):
-                self.store.toggle_device(device.id)
-            await self.publish_state()
+            before_revision = self.store.revision
+            device = random.choice(devices)
+            self.store.toggle_device(device.id)
+            if self.store.revision != before_revision:
+                await self.publish_state()
 
     def stop(self) -> None:
         self._running = False

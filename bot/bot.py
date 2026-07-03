@@ -67,7 +67,7 @@ async def usage_command(ctx: commands.Context) -> None:
         await ctx.reply(f"I couldn't reach the office backend right now: {exc}", mention_author=False)
 
 
-@tasks.loop(seconds=10)
+@tasks.loop(seconds=45)
 async def alert_watcher() -> None:
     if not DISCORD_ALERT_CHANNEL_ID:
         return
