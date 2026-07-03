@@ -15,7 +15,7 @@ The v1.2 problem statement defines the fixed office setup as 3 rooms, each with 
 - Polling fallback if WebSocket disconnects
 - Alert rules for after-hours usage and rooms left fully ON
 - Discord commands for status, room checks, and usage
-- Local demo endpoints for predictable presentations
+- Clickable floorplan controls backed by local demo endpoints
 - Optional OpenAI rewrite for friendlier Discord responses
 
 ## Architecture
@@ -121,6 +121,8 @@ Local demo endpoints:
 - `POST /api/demo/trigger-after-hours-alert`
 - `POST /api/demo/reset`
 
+The dashboard uses `POST /api/demo/toggle/{deviceId}` when a user clicks a fan or light directly on the floorplan. These endpoints are kept for local demo control and are not production-facing features.
+
 ## Discord Commands
 
 - `!status`
@@ -137,7 +139,7 @@ Local demo endpoints:
 
 ## Simulation Logic
 
-For the final demo, keep `SIMULATION_ENABLED=false` and use the dashboard demo controls to change device states manually. This keeps the dashboard and Discord responses stable and predictable.
+For the final demo, keep `SIMULATION_ENABLED=false` and click fans/lights directly on the floorplan to change device states manually. This keeps the dashboard and Discord responses stable and predictable.
 
 If `SIMULATION_ENABLED=true`, the backend simulator runs every `SIMULATION_INTERVAL_SECONDS`, toggles exactly one device, updates timestamps and `onSince`, recalculates watts and kWh, evaluates alerts, and broadcasts only when state actually changes. The default interval is `15` seconds.
 
@@ -150,6 +152,8 @@ estimatedKwhToday += currentTotalWatts * elapsedHours / 1000
 ## Hardware Schematic
 
 Use `docs/hardware-wiring.md` to build a representative one-room Wokwi schematic with ESP32 inputs for 2 fans and 3 lights. Save the screenshot as `docs/diagrams/hardware-schematic.png`.
+
+The ESP32/Wokwi schematic is a hardware concept deliverable only. The running software demo does not read live ESP32 data; live device state comes from the FastAPI in-memory simulator and the local toggle endpoints. A real ESP32 integration is listed as a future improvement.
 
 ## Diagrams
 
@@ -169,7 +173,7 @@ SIMULATION_ENABLED=false
 SIMULATION_INTERVAL_SECONDS=15
 ```
 
-Then use the dashboard buttons to turn devices on, trigger alerts, and reset the system at predictable moments.
+Then click fans and lights directly on the dashboard floorplan to toggle devices at predictable moments. The dashboard calls the backend toggle endpoint, so Discord bot responses stay in sync with the same backend state.
 
 ## Team Member Contributions
 

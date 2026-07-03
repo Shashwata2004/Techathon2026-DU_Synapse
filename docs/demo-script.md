@@ -17,11 +17,11 @@ SIMULATION_ENABLED=false
 SIMULATION_INTERVAL_SECONDS=15
 ```
 
-This keeps the state stable while you use demo controls manually.
+This keeps the state stable while you click fans and lights directly on the floorplan.
 
 ## 0:45-1:35 Dashboard
 
-Show the office layout, live device status, total watts, room-wise watts, estimated kWh, and alert panel. Point out glowing lights and spinning fans.
+Show the office layout, live device status, total watts, room-wise watts, estimated kWh, and alert panel. Click one fan and one light on the floorplan, then point out the glowing light, spinning fan, and updated power values.
 
 ## 1:35-2:15 Discord Bot
 
@@ -37,7 +37,7 @@ Mention that every answer comes from the backend.
 
 ## 2:15-2:35 Alert
 
-Use the dashboard demo control or call:
+Click several devices on the floorplan after office hours, or call:
 
 ```bash
 curl -X POST http://localhost:8000/api/demo/trigger-after-hours-alert
@@ -47,4 +47,4 @@ Show the alert appearing on the dashboard. If `DISCORD_ALERT_CHANNEL_ID` is conf
 
 ## 2:35-3:00 Hardware And Close
 
-Show the Wokwi schematic screenshot and mention the one-room representative ESP32 design. Close with the shared backend, real-time updates, and predictable demo controls.
+Show the Wokwi schematic screenshot and mention the one-room representative ESP32 design. Close with the shared backend, real-time updates, and clickable floorplan controls.

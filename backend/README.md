@@ -9,7 +9,7 @@ SIMULATION_ENABLED=false
 SIMULATION_INTERVAL_SECONDS=15
 ```
 
-Demo endpoints still work when simulation is disabled, and WebSocket broadcasts still happen after demo controls change device state.
+Demo endpoints still work when simulation is disabled, and WebSocket broadcasts still happen after a floorplan click or direct demo endpoint call changes device state.
 
 ## Run
 
