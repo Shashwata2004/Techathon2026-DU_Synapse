@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720">
+  <rect width="1200" height="720" fill="#f8fafc"/>
+  <text x="600" y="58" text-anchor="middle" font-family="Arial, sans-serif" font-size="34" font-weight="700" fill="#17202a">Representative One-Room Hardware Schematic</text>
+
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M2,2 L10,6 L2,10 Z" fill="#344054"/>
+    </marker>
+    <style>
+      .board { fill: #17202a; stroke: #475467; stroke-width: 4; rx: 18; }
+      .pin { fill: #fdb022; }
+      .input { fill: #ffffff; stroke: #98a2b3; stroke-width: 3; rx: 12; }
+      .load { fill: #ecfdf3; stroke: #12b76a; stroke-width: 3; rx: 12; }
+      .warn { fill: #fff7ed; stroke: #f79009; stroke-width: 3; rx: 12; }
+      .title { font: 700 22px Arial, sans-serif; fill: #17202a; }
+      .small { font: 16px Arial, sans-serif; fill: #475467; }
+      .wire { stroke: #344054; stroke-width: 4; fill: none; marker-end: url(#arrow); }
+      .power { stroke: #d92d20; stroke-width: 4; fill: none; }
+      .ground { stroke: #667085; stroke-width: 4; fill: none; }
+    </style>
+  </defs>
+
+  <rect class="board" x="470" y="140" width="260" height="420"/>
+  <text x="600" y="190" text-anchor="middle" font-family="Arial, sans-serif" font-size="30" font-weight="700" fill="#ffffff">ESP32</text>
+  <text x="600" y="225" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" fill="#d0d5dd">Digital state sensing</text>
+
+  <g>
+    <circle class="pin" cx="492" cy="280" r="7"/><text class="small" x="510" y="286">GPIO 18 Fan 1</text>
+    <circle class="pin" cx="492" cy="330" r="7"/><text class="small" x="510" y="336">GPIO 19 Fan 2</text>
+    <circle class="pin" cx="492" cy="380" r="7"/><text class="small" x="510" y="386">GPIO 21 Light 1</text>
+    <circle class="pin" cx="492" cy="430" r="7"/><text class="small" x="510" y="436">GPIO 22 Light 2</text>
+    <circle class="pin" cx="492" cy="480" r="7"/><text class="small" x="510" y="486">GPIO 23 Light 3</text>
+    <circle class="pin" cx="708" cy="515" r="7"/><text class="small" x="590" y="520" fill="#d0d5dd">GPIO 34 ADC</text>
+  </g>
+
+  <rect class="input" x="110" y="245" width="190" height="58"/><text class="title" x="205" y="281" text-anchor="middle">Fan 1 Switch</text>
+  <rect class="input" x="110" y="315" width="190" height="58"/><text class="title" x="205" y="351" text-anchor="middle">Fan 2 Switch</text>
+  <rect class="input" x="110" y="385" width="190" height="58"/><text class="title" x="205" y="421" text-anchor="middle">Light 1 Switch</text>
+  <rect class="input" x="110" y="455" width="190" height="58"/><text class="title" x="205" y="491" text-anchor="middle">Light 2 Switch</text>
+  <rect class="input" x="110" y="525" width="190" height="58"/><text class="title" x="205" y="561" text-anchor="middle">Light 3 Switch</text>
+
+  <path class="wire" d="M300 274 L492 280"/>
+  <path class="wire" d="M300 344 L492 330"/>
+  <path class="wire" d="M300 414 L492 380"/>
+  <path class="wire" d="M300 484 L492 430"/>
+  <path class="wire" d="M300 554 L492 480"/>
+
+  <rect class="load" x="860" y="245" width="210" height="80"/><text class="title" x="965" y="286" text-anchor="middle">2 Fan Loads</text>
+  <text class="small" x="965" y="310" text-anchor="middle">Motors or indicators</text>
+  <rect class="load" x="860" y="365" width="210" height="80"/><text class="title" x="965" y="406" text-anchor="middle">3 Light Loads</text>
+  <text class="small" x="965" y="430" text-anchor="middle">LEDs with resistors</text>
+  <rect class="input" x="845" y="495" width="240" height="70"/><text class="title" x="965" y="532" text-anchor="middle">Current Sensor</text>
+  <text class="small" x="965" y="555" text-anchor="middle">Optional analog read</text>
+
+  <path class="wire" d="M730 515 L845 530"/>
+  <path class="power" d="M90 150 H1100"/>
+  <text class="small" x="100" y="138">3.3V rail for switches</text>
+  <path class="ground" d="M90 635 H1100"/>
+  <text class="small" x="100" y="660">Common GND</text>
+
+  <rect class="warn" x="805" y="110" width="300" height="76"/>
+  <text class="small" x="955" y="143" text-anchor="middle">Real AC loads require relays,</text>
+  <text class="small" x="955" y="167" text-anchor="middle">isolation, and protection.</text>
+</svg>
