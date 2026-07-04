@@ -28,9 +28,13 @@ Show the office layout, live device status, total watts, room-wise watts, estima
 Run:
 
 ```text
+!help
+!summary
 !status
 !room work1
 !usage
+!top
+!recommend
 ```
 
 Mention that every answer comes from the backend.
@@ -44,6 +48,24 @@ curl -X POST http://localhost:8000/api/demo/trigger-after-hours-alert
 ```
 
 Show the alert appearing on the dashboard. If `DISCORD_ALERT_CHANNEL_ID` is configured, show the proactive Discord alert too.
+
+For the bonus proactive alert demo:
+
+1. Enable Discord Developer Mode.
+2. Copy the target channel ID.
+3. Set `DISCORD_ALERT_CHANNEL_ID`.
+4. Start the bot.
+5. Trigger an alert.
+6. Show that the bot posts the alert once in the configured channel.
+
+Optional control commands to demonstrate:
+
+```text
+!toggle work1 fan1
+!roomon work2
+!roomoff work2
+!resetdemo
+```
 
 ## 2:35-3:00 Hardware And Close
 

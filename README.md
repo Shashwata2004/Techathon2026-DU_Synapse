@@ -102,6 +102,17 @@ python bot.py
 
 Set `DISCORD_BOT_TOKEN` before running. `OPENAI_API_KEY` and `DISCORD_ALERT_CHANNEL_ID` are optional.
 
+To enable proactive alert posting:
+
+1. Open Discord user settings.
+2. Go to Advanced.
+3. Enable Developer Mode.
+4. Right-click the Discord channel that should receive alerts.
+5. Click Copy Channel ID.
+6. Set `DISCORD_ALERT_CHANNEL_ID` in `bot/.env` or your shell.
+
+If `DISCORD_ALERT_CHANNEL_ID` is empty, proactive alerts are disabled gracefully.
+
 ## API Endpoints
 
 - `GET /api/state`: full state
@@ -125,11 +136,26 @@ The dashboard uses `POST /api/demo/toggle/{deviceId}` when a user clicks a fan o
 
 ## Discord Commands
 
-- `!status`
-- `!room drawing`
-- `!room work1`
-- `!room work2`
-- `!usage`
+- `!help`: show all available commands
+- `!status`: full office status
+- `!room <room>`: check one room
+- `!room drawing`: check Drawing Room
+- `!room work1`: check Work Room 1
+- `!room work2`: check Work Room 2
+- `!usage`: current watts, kWh estimate, highest room or rooms, active device count
+- `!alerts`: show active alerts
+- `!summary`: boss-friendly office summary
+- `!waste <hours>`: estimate waste if current usage continues for a time period
+- `!recommend`: energy-saving recommendation from live backend state
+- `!top`: highest-consuming room or rooms
+- `!toggle <room> <device>`: toggle one backend device
+- `!roomon <room>`: turn one room ON through the backend
+- `!roomoff <room>`: turn one room OFF through the backend
+- `!resetdemo`: reset demo state
+
+Examples: `!waste 3`, `!toggle work1 fan1`, `!roomon work2`, `!roomoff drawing`
+
+The bot also supports proactive alert posting when `DISCORD_ALERT_CHANNEL_ID` is configured. It polls `GET /api/alerts` every 45 seconds and posts each new alert once.
 
 ## Alert Rules
 

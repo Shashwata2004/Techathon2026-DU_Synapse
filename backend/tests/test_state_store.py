@@ -67,6 +67,26 @@ def test_room_aliases_work() -> None:
     assert store.get_room("work2").id == "work-room-2"
 
 
+def test_usage_reports_all_highest_rooms_on_tie() -> None:
+    store = StateStore(replace(settings, simulation_enabled=False))
+    store.set_device("drawing-room-fan-1", "ON")
+    store.set_device("work-room-1-fan-1", "ON")
+
+    usage = store.get_usage()
+
+    assert usage.highest_room == "Drawing Room"
+    assert usage.highest_rooms == ["Drawing Room", "Work Room 1"]
+
+
+def test_usage_has_no_highest_room_when_all_rooms_are_zero() -> None:
+    store = StateStore(replace(settings, simulation_enabled=False))
+
+    usage = store.get_usage()
+
+    assert usage.highest_room is None
+    assert usage.highest_rooms == []
+
+
 def test_after_hours_alert_is_duplicate_safe() -> None:
     always_after_hours = replace(
         settings,

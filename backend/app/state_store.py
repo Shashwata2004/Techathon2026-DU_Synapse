@@ -106,8 +106,12 @@ class StateStore:
     def get_usage(self) -> UsageResponse:
         state = self.get_state()
         highest_room = None
+        highest_rooms: list[str] = []
         if state.room_wise_power:
-            highest_room = max(state.room_wise_power, key=state.room_wise_power.get)
+            max_watts = max(state.room_wise_power.values())
+            if max_watts > 0:
+                highest_rooms = [room for room, watts in state.room_wise_power.items() if watts == max_watts]
+                highest_room = highest_rooms[0]
         return UsageResponse(
             totalCurrentWatts=state.total_current_watts,
             roomWisePower=state.room_wise_power,
@@ -115,6 +119,7 @@ class StateStore:
             activeDeviceCount=state.active_device_count,
             totalDeviceCount=state.total_device_count,
             highestRoom=highest_room,
+            highestRooms=highest_rooms,
         )
 
     def get_alerts(self) -> dict[str, list[Alert]]:

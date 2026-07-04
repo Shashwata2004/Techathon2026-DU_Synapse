@@ -55,6 +55,7 @@ class UsageResponse(ApiModel):
     active_device_count: int = Field(alias="activeDeviceCount")
     total_device_count: int = Field(alias="totalDeviceCount")
     highest_room: str | None = Field(default=None, alias="highestRoom")
+    highest_rooms: list[str] = Field(default_factory=list, alias="highestRooms")
 
 
 class SystemState(ApiModel):
