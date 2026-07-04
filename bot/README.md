@@ -32,7 +32,7 @@ OPENAI_API_KEY=
 
 `OPENAI_API_KEY` and `DISCORD_ALERT_CHANNEL_ID` are optional. Without them, the bot commands still work, but LLM rewriting and proactive alert posting are disabled.
 
-The bot is command-driven. Every command fetches fresh data from the backend instead of storing device state in the bot. Optional proactive alert posting polls alerts every 45 seconds only when `DISCORD_ALERT_CHANNEL_ID` is configured.
+The bot is command-driven. Every command fetches fresh data from the backend instead of storing device state in the bot. Proactive alert posting is implemented: when `DISCORD_ALERT_CHANNEL_ID` is configured, the bot polls `GET /api/alerts` every 45 seconds and posts each new alert once to that channel.
 
 ## Proactive Alert Setup
 

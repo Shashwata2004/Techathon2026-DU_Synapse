@@ -160,7 +160,7 @@ The dashboard uses `POST /api/demo/toggle/{deviceId}` when a user clicks a fan o
 
 Examples: `!waste 3`, `!toggle work1 fan1`, `!roomon work2`, `!roomoff drawing`
 
-The bot also supports proactive alert posting when `DISCORD_ALERT_CHANNEL_ID` is configured. It polls `GET /api/alerts` every 45 seconds and posts each new alert once.
+Proactive Discord alert posting is implemented. When `DISCORD_ALERT_CHANNEL_ID` is configured, the bot polls `GET /api/alerts` every 45 seconds and posts each new alert once to that channel. Leave the channel ID empty to run commands only.
 
 ## Dashboard Enhancements
 
