@@ -9,6 +9,18 @@ function formatTime(value) {
   }).format(new Date(value));
 }
 
+function formatDuration(device) {
+  if (device.status !== "ON" || !device.onSince) return "OFF";
+
+  const elapsedMs = Math.max(0, Date.now() - new Date(device.onSince).getTime());
+  const minutes = Math.floor(elapsedMs / 60000);
+  const hours = Math.floor(minutes / 60);
+  const remainingMinutes = minutes % 60;
+
+  if (hours > 0) return `ON for ${hours}h ${remainingMinutes}m`;
+  return `ON for ${Math.max(minutes, 1)}m`;
+}
+
 export default function DeviceStatusPanel({ rooms }) {
   return (
     <section className="panel device-panel">
@@ -30,6 +42,9 @@ export default function DeviceStatusPanel({ rooms }) {
                   <span className="device-name">{device.name}</span>
                   <span className={`status-pill ${device.status.toLowerCase()}`}>{device.status}</span>
                   <span className="watts">{device.currentPower}W</span>
+                  <span className="duration" title={device.onSince ? `Since ${formatTime(device.onSince)}` : "Device is OFF"}>
+                    {formatDuration(device)}
+                  </span>
                   <span className="changed">{formatTime(device.lastChanged)}</span>
                 </div>
               );

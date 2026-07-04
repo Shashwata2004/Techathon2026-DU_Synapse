@@ -2,14 +2,16 @@
 
 FastAPI is the single source of truth for all simulated device state, usage totals, alerts, REST APIs, and WebSocket updates.
 
-For stable demos, run with:
+By default, automatic dummy data simulation is enabled:
 
 ```env
-SIMULATION_ENABLED=false
-SIMULATION_INTERVAL_SECONDS=15
+SIMULATION_ENABLED=true
+SIMULATION_INTERVAL_SECONDS=25
 ```
 
-Demo endpoints still work when simulation is disabled, and WebSocket broadcasts still happen after a floorplan click or direct demo endpoint call changes device state.
+The simulator toggles exactly one of the 15 devices every 25 seconds, recalculates usage and alerts, and broadcasts the updated state through WebSocket.
+
+For stable controlled demos, run with `SIMULATION_ENABLED=false`. Demo endpoints still work when simulation is disabled, and WebSocket broadcasts still happen after a floorplan click or direct demo endpoint call changes device state.
 
 ## Run
 
@@ -43,6 +45,7 @@ pytest
 - `GET /api/rooms/{roomId}`
 - `GET /api/usage`
 - `GET /api/alerts`
+- `GET /api/events`
 - `WS /ws`
 
 Demo-only local endpoints:
@@ -53,3 +56,4 @@ Demo-only local endpoints:
 - `POST /api/demo/set-room-all-off/{roomId}`
 - `POST /api/demo/trigger-after-hours-alert`
 - `POST /api/demo/reset`
+- `POST /api/demo/simulator/toggle`

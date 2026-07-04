@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { fetchState } from "../api/client";
 
 const WS_URL = import.meta.env.VITE_WS_URL || "ws://localhost:8000/ws";
@@ -10,13 +10,17 @@ export function useLiveState() {
   const pollingTimer = useRef(null);
   const socketRef = useRef(null);
 
+  const applyState = useCallback((nextState) => {
+    setState(nextState);
+  }, []);
+
   useEffect(() => {
     let mounted = true;
 
     async function loadInitial() {
       try {
         const nextState = await fetchState();
-        if (mounted) setState(nextState);
+        if (mounted) applyState(nextState);
       } catch {
         if (mounted) setConnection("offline");
       }
@@ -34,7 +38,7 @@ export function useLiveState() {
       setConnection("polling");
       pollingTimer.current = setInterval(async () => {
         try {
-          setState(await fetchState());
+          applyState(await fetchState());
           setConnection("polling");
         } catch {
           setConnection("offline");
@@ -54,7 +58,7 @@ export function useLiveState() {
 
       socket.onmessage = (event) => {
         if (!mounted) return;
-        setState(JSON.parse(event.data));
+        applyState(JSON.parse(event.data));
         setConnection("connected");
       };
 
@@ -78,7 +82,7 @@ export function useLiveState() {
       if (reconnectTimer.current) clearTimeout(reconnectTimer.current);
       if (socketRef.current) socketRef.current.close();
     };
-  }, []);
+  }, [applyState]);
 
-  return { state, connection, setState };
+  return { state, connection, setState: applyState };
 }

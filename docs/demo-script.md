@@ -8,20 +8,22 @@ People leave office lights and fans on after work. This project monitors the off
 
 ## 0:20-0:45 Architecture
 
-Show `docs/diagrams/system-diagram.png`. Explain that simulated devices feed one FastAPI backend. The dashboard uses WebSocket updates, and the Discord bot reads the same backend through REST.
+Show `docs/diagrams/system-architecture.png`. Explain that simulated devices feed one FastAPI backend. The dashboard uses WebSocket updates, and the Discord bot reads the same backend through REST.
 
 For the final recording, use:
 
 ```env
 SIMULATION_ENABLED=false
-SIMULATION_INTERVAL_SECONDS=15
+SIMULATION_INTERVAL_SECONDS=25
 ```
 
 This keeps the state stable while you click fans and lights directly on the floorplan.
 
+To show automatic dummy data simulation instead, start the backend with `SIMULATION_ENABLED=true`, wait about 25 seconds, and point out that one device changes automatically while the dashboard updates without refresh.
+
 ## 0:45-1:35 Dashboard
 
-Show the office layout, live device status, total watts, room-wise watts, estimated kWh, and alert panel. Click one fan and one light on the floorplan, then point out the glowing light, spinning fan, and updated power values.
+Show the office layout, simulator ON/OFF control, live device status, total watts, room-wise watts, estimated kWh, energy recommendation, recent activity, and alert panel. Click one fan and one light on the floorplan, then point out the glowing light, spinning fan, updated power values, updated recommendation, and new activity feed entries.
 
 ## 1:35-2:15 Discord Bot
 

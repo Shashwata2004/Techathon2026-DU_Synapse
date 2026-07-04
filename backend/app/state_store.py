@@ -6,7 +6,7 @@ from threading import RLock
 
 from .alerts import evaluate_alerts
 from .config import Settings, settings
-from .models import Alert, Device, DeviceStatus, Room, SystemState, UsageResponse
+from .models import Alert, Device, DeviceEvent, DeviceStatus, Room, SimulatorStatus, SystemState, UsageResponse
 from .usage import calculate_incremental_kwh
 
 
@@ -36,19 +36,22 @@ class StateStore:
         self._devices: dict[str, Device] = {}
         self._active_alerts: dict[str, Alert] = {}
         self._recent_alerts: list[Alert] = []
+        self._events: list[DeviceEvent] = []
         self._estimated_kwh_today = 0.0
         self._last_energy_update = self._now()
         self._last_updated = self._last_energy_update
         self._force_after_hours_alert = False
+        self._simulator_enabled = app_settings.simulation_enabled
         self._revision = 0
         self.reset()
 
-    def reset(self) -> SystemState:
+    def reset(self, *, record_event: bool = False, source: str = "demo") -> SystemState:
         with self._lock:
             now = self._now()
             self._devices = {}
             self._active_alerts = {}
             self._recent_alerts = []
+            self._events = []
             self._estimated_kwh_today = 0.0
             self._last_energy_update = now
             self._last_updated = now
@@ -62,6 +65,8 @@ class StateStore:
                     self._create_device(room_id, room_name, "light", index, 15, now)
 
             self._evaluate_alerts(now)
+            if record_event:
+                self._add_reset_event(now, source)
             self._revision += 1
             return self.get_state()
 
@@ -88,6 +93,11 @@ class StateStore:
                 activeDeviceCount=active_device_count,
                 totalDeviceCount=len(devices),
                 lastUpdated=self._last_updated,
+                events=self._events,
+                simulatorStatus=SimulatorStatus(
+                    enabled=self._simulator_enabled,
+                    intervalSeconds=self.settings.simulation_interval_seconds,
+                ),
             )
 
     def get_devices(self) -> list[Device]:
@@ -126,13 +136,28 @@ class StateStore:
         state = self.get_state()
         return {"activeAlerts": state.active_alerts, "recentAlerts": state.recent_alerts}
 
-    def toggle_device(self, device_id: str) -> SystemState:
+    def get_events(self) -> list[DeviceEvent]:
+        return self.get_state().events
+
+    def set_simulator_enabled(self, enabled: bool, *, source: str = "manual") -> SystemState:
+        with self._lock:
+            if self._simulator_enabled == enabled:
+                return self.get_state()
+
+            now = self._now()
+            self._simulator_enabled = enabled
+            self._last_updated = now
+            self._add_simulator_event(enabled, now, source)
+            self._revision += 1
+            return self.get_state()
+
+    def toggle_device(self, device_id: str, *, source: str = "manual") -> SystemState:
         with self._lock:
             device = self._get_device(device_id)
             next_status: DeviceStatus = "OFF" if device.status == "ON" else "ON"
-            return self.set_device(device_id, next_status)
+            return self.set_device(device_id, next_status, source=source)
 
-    def set_device(self, device_id: str, status: DeviceStatus) -> SystemState:
+    def set_device(self, device_id: str, status: DeviceStatus, *, source: str = "manual") -> SystemState:
         with self._lock:
             device = self._get_device(device_id)
             if device.status == status:
@@ -143,9 +168,10 @@ class StateStore:
             device.current_power = device.wattage if status == "ON" else 0
             device.last_changed = now
             device.on_since = now if status == "ON" else None
+            self._add_device_event(device, now, source)
             return self._finish_update(now, changed=True)
 
-    def set_room_status(self, room_alias: str, status: DeviceStatus) -> SystemState:
+    def set_room_status(self, room_alias: str, status: DeviceStatus, *, source: str = "manual") -> SystemState:
         with self._lock:
             room_id = self.resolve_room_id(room_alias)
             changed = any(device.room_id == room_id and device.status != status for device in self._devices.values())
@@ -159,6 +185,7 @@ class StateStore:
                     device.current_power = device.wattage if status == "ON" else 0
                     device.last_changed = now
                     device.on_since = now if status == "ON" else None
+                    self._add_device_event(device, now, source)
             return self._finish_update(now, changed=True)
 
     def trigger_after_hours_alert(self) -> SystemState:
@@ -166,7 +193,7 @@ class StateStore:
             changed = not self._force_after_hours_alert
             self._force_after_hours_alert = True
             before_revision = self._revision
-            state = self.set_room_status("work-room-2", "ON")
+            state = self.set_room_status("work-room-2", "ON", source="demo")
             if self._revision == before_revision and changed:
                 now = self._prepare_update()
                 return self._finish_update(now, changed=True)
@@ -240,6 +267,41 @@ class StateStore:
             self._last_updated = now
             self._revision += 1
         return self.get_state()
+
+    def _add_device_event(self, device: Device, timestamp: datetime, source: str) -> None:
+        event = DeviceEvent(
+            id=f"event-{int(timestamp.timestamp() * 1000)}-{device.id}",
+            type="device_change",
+            timestamp=timestamp,
+            message=f"{device.room_name} {device.name} turned {device.status}",
+            source=source,
+            deviceId=device.id,
+            deviceName=device.name,
+            roomId=device.room_id,
+            roomName=device.room_name,
+            status=device.status,
+        )
+        self._events = [event, *self._events][:20]
+
+    def _add_reset_event(self, timestamp: datetime, source: str) -> None:
+        event = DeviceEvent(
+            id=f"event-{int(timestamp.timestamp() * 1000)}-reset",
+            type="reset",
+            timestamp=timestamp,
+            message="Demo state reset. All devices are OFF.",
+            source=source,
+        )
+        self._events = [event, *self._events][:20]
+
+    def _add_simulator_event(self, enabled: bool, timestamp: datetime, source: str) -> None:
+        event = DeviceEvent(
+            id=f"event-{int(timestamp.timestamp() * 1000)}-simulator",
+            type="simulator",
+            timestamp=timestamp,
+            message=f"Simulator turned {'ON' if enabled else 'OFF'}",
+            source=source,
+        )
+        self._events = [event, *self._events][:20]
 
     def _evaluate_alerts(self, now: datetime) -> None:
         devices_by_room: dict[str, list[Device]] = defaultdict(list)

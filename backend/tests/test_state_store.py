@@ -87,6 +87,33 @@ def test_usage_has_no_highest_room_when_all_rooms_are_zero() -> None:
     assert usage.highest_rooms == []
 
 
+def test_state_includes_simulator_metadata() -> None:
+    store = StateStore(replace(settings, simulation_enabled=True, simulation_interval_seconds=25))
+    state = store.get_state()
+
+    assert state.simulator_status.enabled is True
+    assert state.simulator_status.interval_seconds == 25
+
+
+def test_device_changes_are_recorded_in_event_log() -> None:
+    store = StateStore(replace(settings, simulation_enabled=False))
+    state = store.set_device("drawing-room-fan-1", "ON", source="manual")
+
+    assert len(state.events) == 1
+    assert state.events[0].type == "device_change"
+    assert state.events[0].device_id == "drawing-room-fan-1"
+    assert state.events[0].status == "ON"
+
+
+def test_simulator_status_can_change_at_runtime() -> None:
+    store = StateStore(replace(settings, simulation_enabled=True, simulation_interval_seconds=25))
+    state = store.set_simulator_enabled(False, source="manual")
+
+    assert state.simulator_status.enabled is False
+    assert state.events[0].type == "simulator"
+    assert "OFF" in state.events[0].message
+
+
 def test_after_hours_alert_is_duplicate_safe() -> None:
     always_after_hours = replace(
         settings,

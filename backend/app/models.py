@@ -7,6 +7,7 @@ from pydantic import BaseModel, ConfigDict, Field
 DeviceStatus = Literal["ON", "OFF"]
 DeviceType = Literal["fan", "light"]
 AlertSeverity = Literal["info", "warning", "critical"]
+EventType = Literal["device_change", "reset", "simulator"]
 
 
 class ApiModel(BaseModel):
@@ -58,6 +59,24 @@ class UsageResponse(ApiModel):
     highest_rooms: list[str] = Field(default_factory=list, alias="highestRooms")
 
 
+class DeviceEvent(ApiModel):
+    id: str
+    type: EventType
+    timestamp: datetime
+    message: str
+    source: str
+    device_id: str | None = Field(default=None, alias="deviceId")
+    device_name: str | None = Field(default=None, alias="deviceName")
+    room_id: str | None = Field(default=None, alias="roomId")
+    room_name: str | None = Field(default=None, alias="roomName")
+    status: DeviceStatus | None = None
+
+
+class SimulatorStatus(ApiModel):
+    enabled: bool
+    interval_seconds: int = Field(alias="intervalSeconds")
+
+
 class SystemState(ApiModel):
     rooms: list[Room]
     devices: list[Device]
@@ -69,6 +88,8 @@ class SystemState(ApiModel):
     active_device_count: int = Field(alias="activeDeviceCount")
     total_device_count: int = Field(alias="totalDeviceCount")
     last_updated: datetime = Field(alias="lastUpdated")
+    events: list[DeviceEvent] = Field(default_factory=list)
+    simulator_status: SimulatorStatus = Field(alias="simulatorStatus")
 
 
 class SetDeviceRequest(BaseModel):

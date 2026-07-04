@@ -19,15 +19,20 @@ class DeviceSimulator:
         self._running = True
         while self._running:
             await asyncio.sleep(self.interval_seconds)
-            devices = self.store.get_devices()
-            if not devices:
-                continue
+            await self.simulate_once()
 
-            before_revision = self.store.revision
-            device = random.choice(devices)
-            self.store.toggle_device(device.id)
-            if self.store.revision != before_revision:
-                await self.publish_state()
+    async def simulate_once(self) -> bool:
+        devices = self.store.get_devices()
+        if not devices:
+            return False
+
+        before_revision = self.store.revision
+        device = random.choice(devices)
+        self.store.toggle_device(device.id, source="simulator")
+        if self.store.revision != before_revision:
+            await self.publish_state()
+            return True
+        return False
 
     def stop(self) -> None:
         self._running = False

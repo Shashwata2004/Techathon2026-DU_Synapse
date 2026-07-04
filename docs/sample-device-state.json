@@ -1,0 +1,429 @@
+{
+  "rooms": [
+    {
+      "id": "drawing-room",
+      "name": "Drawing Room",
+      "purpose": "Waiting area",
+      "devices": [
+        {
+          "id": "drawing-room-fan-1",
+          "name": "Fan 1",
+          "roomId": "drawing-room",
+          "roomName": "Drawing Room",
+          "type": "fan",
+          "status": "OFF",
+          "wattage": 60,
+          "currentPower": 0,
+          "lastChanged": "2026-07-04T09:00:00Z",
+          "onSince": null
+        },
+        {
+          "id": "drawing-room-fan-2",
+          "name": "Fan 2",
+          "roomId": "drawing-room",
+          "roomName": "Drawing Room",
+          "type": "fan",
+          "status": "OFF",
+          "wattage": 60,
+          "currentPower": 0,
+          "lastChanged": "2026-07-04T09:00:00Z",
+          "onSince": null
+        },
+        {
+          "id": "drawing-room-light-1",
+          "name": "Light 1",
+          "roomId": "drawing-room",
+          "roomName": "Drawing Room",
+          "type": "light",
+          "status": "ON",
+          "wattage": 15,
+          "currentPower": 15,
+          "lastChanged": "2026-07-04T09:05:00Z",
+          "onSince": "2026-07-04T09:05:00Z"
+        },
+        {
+          "id": "drawing-room-light-2",
+          "name": "Light 2",
+          "roomId": "drawing-room",
+          "roomName": "Drawing Room",
+          "type": "light",
+          "status": "OFF",
+          "wattage": 15,
+          "currentPower": 0,
+          "lastChanged": "2026-07-04T09:00:00Z",
+          "onSince": null
+        },
+        {
+          "id": "drawing-room-light-3",
+          "name": "Light 3",
+          "roomId": "drawing-room",
+          "roomName": "Drawing Room",
+          "type": "light",
+          "status": "OFF",
+          "wattage": 15,
+          "currentPower": 0,
+          "lastChanged": "2026-07-04T09:00:00Z",
+          "onSince": null
+        }
+      ],
+      "fansOn": 0,
+      "lightsOn": 1,
+      "currentPower": 15,
+      "activeAlerts": []
+    },
+    {
+      "id": "work-room-1",
+      "name": "Work Room 1",
+      "purpose": "Employee workspace",
+      "devices": [
+        {
+          "id": "work-room-1-fan-1",
+          "name": "Fan 1",
+          "roomId": "work-room-1",
+          "roomName": "Work Room 1",
+          "type": "fan",
+          "status": "ON",
+          "wattage": 60,
+          "currentPower": 60,
+          "lastChanged": "2026-07-04T09:10:00Z",
+          "onSince": "2026-07-04T09:10:00Z"
+        },
+        {
+          "id": "work-room-1-fan-2",
+          "name": "Fan 2",
+          "roomId": "work-room-1",
+          "roomName": "Work Room 1",
+          "type": "fan",
+          "status": "OFF",
+          "wattage": 60,
+          "currentPower": 0,
+          "lastChanged": "2026-07-04T09:00:00Z",
+          "onSince": null
+        },
+        {
+          "id": "work-room-1-light-1",
+          "name": "Light 1",
+          "roomId": "work-room-1",
+          "roomName": "Work Room 1",
+          "type": "light",
+          "status": "ON",
+          "wattage": 15,
+          "currentPower": 15,
+          "lastChanged": "2026-07-04T09:12:00Z",
+          "onSince": "2026-07-04T09:12:00Z"
+        },
+        {
+          "id": "work-room-1-light-2",
+          "name": "Light 2",
+          "roomId": "work-room-1",
+          "roomName": "Work Room 1",
+          "type": "light",
+          "status": "OFF",
+          "wattage": 15,
+          "currentPower": 0,
+          "lastChanged": "2026-07-04T09:00:00Z",
+          "onSince": null
+        },
+        {
+          "id": "work-room-1-light-3",
+          "name": "Light 3",
+          "roomId": "work-room-1",
+          "roomName": "Work Room 1",
+          "type": "light",
+          "status": "OFF",
+          "wattage": 15,
+          "currentPower": 0,
+          "lastChanged": "2026-07-04T09:00:00Z",
+          "onSince": null
+        }
+      ],
+      "fansOn": 1,
+      "lightsOn": 1,
+      "currentPower": 75,
+      "activeAlerts": []
+    },
+    {
+      "id": "work-room-2",
+      "name": "Work Room 2",
+      "purpose": "Employee workspace",
+      "devices": [
+        {
+          "id": "work-room-2-fan-1",
+          "name": "Fan 1",
+          "roomId": "work-room-2",
+          "roomName": "Work Room 2",
+          "type": "fan",
+          "status": "ON",
+          "wattage": 60,
+          "currentPower": 60,
+          "lastChanged": "2026-07-04T09:15:00Z",
+          "onSince": "2026-07-04T09:15:00Z"
+        },
+        {
+          "id": "work-room-2-fan-2",
+          "name": "Fan 2",
+          "roomId": "work-room-2",
+          "roomName": "Work Room 2",
+          "type": "fan",
+          "status": "ON",
+          "wattage": 60,
+          "currentPower": 60,
+          "lastChanged": "2026-07-04T09:16:00Z",
+          "onSince": "2026-07-04T09:16:00Z"
+        },
+        {
+          "id": "work-room-2-light-1",
+          "name": "Light 1",
+          "roomId": "work-room-2",
+          "roomName": "Work Room 2",
+          "type": "light",
+          "status": "ON",
+          "wattage": 15,
+          "currentPower": 15,
+          "lastChanged": "2026-07-04T09:17:00Z",
+          "onSince": "2026-07-04T09:17:00Z"
+        },
+        {
+          "id": "work-room-2-light-2",
+          "name": "Light 2",
+          "roomId": "work-room-2",
+          "roomName": "Work Room 2",
+          "type": "light",
+          "status": "OFF",
+          "wattage": 15,
+          "currentPower": 0,
+          "lastChanged": "2026-07-04T09:00:00Z",
+          "onSince": null
+        },
+        {
+          "id": "work-room-2-light-3",
+          "name": "Light 3",
+          "roomId": "work-room-2",
+          "roomName": "Work Room 2",
+          "type": "light",
+          "status": "OFF",
+          "wattage": 15,
+          "currentPower": 0,
+          "lastChanged": "2026-07-04T09:00:00Z",
+          "onSince": null
+        }
+      ],
+      "fansOn": 2,
+      "lightsOn": 1,
+      "currentPower": 135,
+      "activeAlerts": []
+    }
+  ],
+  "devices": [
+    {
+      "id": "drawing-room-fan-1",
+      "name": "Fan 1",
+      "roomId": "drawing-room",
+      "roomName": "Drawing Room",
+      "type": "fan",
+      "status": "OFF",
+      "wattage": 60,
+      "currentPower": 0,
+      "lastChanged": "2026-07-04T09:00:00Z",
+      "onSince": null
+    },
+    {
+      "id": "drawing-room-fan-2",
+      "name": "Fan 2",
+      "roomId": "drawing-room",
+      "roomName": "Drawing Room",
+      "type": "fan",
+      "status": "OFF",
+      "wattage": 60,
+      "currentPower": 0,
+      "lastChanged": "2026-07-04T09:00:00Z",
+      "onSince": null
+    },
+    {
+      "id": "drawing-room-light-1",
+      "name": "Light 1",
+      "roomId": "drawing-room",
+      "roomName": "Drawing Room",
+      "type": "light",
+      "status": "ON",
+      "wattage": 15,
+      "currentPower": 15,
+      "lastChanged": "2026-07-04T09:05:00Z",
+      "onSince": "2026-07-04T09:05:00Z"
+    },
+    {
+      "id": "drawing-room-light-2",
+      "name": "Light 2",
+      "roomId": "drawing-room",
+      "roomName": "Drawing Room",
+      "type": "light",
+      "status": "OFF",
+      "wattage": 15,
+      "currentPower": 0,
+      "lastChanged": "2026-07-04T09:00:00Z",
+      "onSince": null
+    },
+    {
+      "id": "drawing-room-light-3",
+      "name": "Light 3",
+      "roomId": "drawing-room",
+      "roomName": "Drawing Room",
+      "type": "light",
+      "status": "OFF",
+      "wattage": 15,
+      "currentPower": 0,
+      "lastChanged": "2026-07-04T09:00:00Z",
+      "onSince": null
+    },
+    {
+      "id": "work-room-1-fan-1",
+      "name": "Fan 1",
+      "roomId": "work-room-1",
+      "roomName": "Work Room 1",
+      "type": "fan",
+      "status": "ON",
+      "wattage": 60,
+      "currentPower": 60,
+      "lastChanged": "2026-07-04T09:10:00Z",
+      "onSince": "2026-07-04T09:10:00Z"
+    },
+    {
+      "id": "work-room-1-fan-2",
+      "name": "Fan 2",
+      "roomId": "work-room-1",
+      "roomName": "Work Room 1",
+      "type": "fan",
+      "status": "OFF",
+      "wattage": 60,
+      "currentPower": 0,
+      "lastChanged": "2026-07-04T09:00:00Z",
+      "onSince": null
+    },
+    {
+      "id": "work-room-1-light-1",
+      "name": "Light 1",
+      "roomId": "work-room-1",
+      "roomName": "Work Room 1",
+      "type": "light",
+      "status": "ON",
+      "wattage": 15,
+      "currentPower": 15,
+      "lastChanged": "2026-07-04T09:12:00Z",
+      "onSince": "2026-07-04T09:12:00Z"
+    },
+    {
+      "id": "work-room-1-light-2",
+      "name": "Light 2",
+      "roomId": "work-room-1",
+      "roomName": "Work Room 1",
+      "type": "light",
+      "status": "OFF",
+      "wattage": 15,
+      "currentPower": 0,
+      "lastChanged": "2026-07-04T09:00:00Z",
+      "onSince": null
+    },
+    {
+      "id": "work-room-1-light-3",
+      "name": "Light 3",
+      "roomId": "work-room-1",
+      "roomName": "Work Room 1",
+      "type": "light",
+      "status": "OFF",
+      "wattage": 15,
+      "currentPower": 0,
+      "lastChanged": "2026-07-04T09:00:00Z",
+      "onSince": null
+    },
+    {
+      "id": "work-room-2-fan-1",
+      "name": "Fan 1",
+      "roomId": "work-room-2",
+      "roomName": "Work Room 2",
+      "type": "fan",
+      "status": "ON",
+      "wattage": 60,
+      "currentPower": 60,
+      "lastChanged": "2026-07-04T09:15:00Z",
+      "onSince": "2026-07-04T09:15:00Z"
+    },
+    {
+      "id": "work-room-2-fan-2",
+      "name": "Fan 2",
+      "roomId": "work-room-2",
+      "roomName": "Work Room 2",
+      "type": "fan",
+      "status": "ON",
+      "wattage": 60,
+      "currentPower": 60,
+      "lastChanged": "2026-07-04T09:16:00Z",
+      "onSince": "2026-07-04T09:16:00Z"
+    },
+    {
+      "id": "work-room-2-light-1",
+      "name": "Light 1",
+      "roomId": "work-room-2",
+      "roomName": "Work Room 2",
+      "type": "light",
+      "status": "ON",
+      "wattage": 15,
+      "currentPower": 15,
+      "lastChanged": "2026-07-04T09:17:00Z",
+      "onSince": "2026-07-04T09:17:00Z"
+    },
+    {
+      "id": "work-room-2-light-2",
+      "name": "Light 2",
+      "roomId": "work-room-2",
+      "roomName": "Work Room 2",
+      "type": "light",
+      "status": "OFF",
+      "wattage": 15,
+      "currentPower": 0,
+      "lastChanged": "2026-07-04T09:00:00Z",
+      "onSince": null
+    },
+    {
+      "id": "work-room-2-light-3",
+      "name": "Light 3",
+      "roomId": "work-room-2",
+      "roomName": "Work Room 2",
+      "type": "light",
+      "status": "OFF",
+      "wattage": 15,
+      "currentPower": 0,
+      "lastChanged": "2026-07-04T09:00:00Z",
+      "onSince": null
+    }
+  ],
+  "totalCurrentWatts": 225,
+  "roomWisePower": {
+    "Drawing Room": 15,
+    "Work Room 1": 75,
+    "Work Room 2": 135
+  },
+  "estimatedKwhToday": 0.125,
+  "activeAlerts": [],
+  "recentAlerts": [],
+  "activeDeviceCount": 6,
+  "totalDeviceCount": 15,
+  "lastUpdated": "2026-07-04T09:17:00Z",
+  "events": [
+    {
+      "id": "event-1783127820000-work-room-2-light-1",
+      "type": "device_change",
+      "timestamp": "2026-07-04T09:17:00Z",
+      "message": "Work Room 2 Light 1 turned ON",
+      "source": "simulator",
+      "deviceId": "work-room-2-light-1",
+      "deviceName": "Light 1",
+      "roomId": "work-room-2",
+      "roomName": "Work Room 2",
+      "status": "ON"
+    }
+  ],
+  "simulatorStatus": {
+    "enabled": true,
+    "intervalSeconds": 25
+  }
+}

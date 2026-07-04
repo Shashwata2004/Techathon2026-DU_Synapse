@@ -2,6 +2,12 @@ import React, { useState } from "react";
 import { Wifi, WifiOff } from "lucide-react";
 import { postDemo } from "./api/client";
 import AlertsPanel from "./components/AlertsPanel";
+import {
+  ActivityFeed,
+  EnergyRecommendationPanel,
+  SimulatorToggle,
+  TopConsumerInsight,
+} from "./components/DashboardInsights";
 import DeviceStatusPanel from "./components/DeviceStatusPanel";
 import OfficeLayout from "./components/OfficeLayout";
 import PowerPanel from "./components/PowerPanel";
@@ -19,6 +25,7 @@ export default function App() {
   const { state, connection, setState } = useLiveState();
   const [pendingDeviceIds, setPendingDeviceIds] = useState(() => new Set());
   const [toggleError, setToggleError] = useState("");
+  const [simulatorPending, setSimulatorPending] = useState(false);
 
   async function toggleDevice(deviceId) {
     if (pendingDeviceIds.has(deviceId)) return;
@@ -40,6 +47,21 @@ export default function App() {
     }
   }
 
+  async function toggleSimulator() {
+    if (simulatorPending) return;
+
+    setToggleError("");
+    setSimulatorPending(true);
+    try {
+      const nextState = await postDemo("/api/demo/simulator/toggle");
+      setState(nextState);
+    } catch {
+      setToggleError("Could not change simulator mode. Check the backend connection.");
+    } finally {
+      setSimulatorPending(false);
+    }
+  }
+
   if (!state) {
     return (
       <main className="loading-screen">
@@ -56,6 +78,11 @@ export default function App() {
           {connection === "connected" ? <Wifi size={18} /> : <WifiOff size={18} />}
           <span>{connectionLabel(connection)}</span>
         </div>
+        <SimulatorToggle
+          simulatorStatus={state.simulatorStatus}
+          isPending={simulatorPending}
+          onToggle={toggleSimulator}
+        />
         {toggleError ? (
           <div className="toggle-error" role="status">
             {toggleError}
@@ -68,9 +95,13 @@ export default function App() {
         <OfficeLayout rooms={state.rooms} onToggleDevice={toggleDevice} pendingDeviceIds={pendingDeviceIds} />
         <aside className="side-stack">
           <PowerPanel state={state} />
+          <TopConsumerInsight state={state} />
+          <EnergyRecommendationPanel state={state} />
           <AlertsPanel alerts={state.activeAlerts} />
         </aside>
       </div>
+
+      <ActivityFeed events={state.events} />
 
       <section className="room-summary">
         {state.rooms.map((room) => (

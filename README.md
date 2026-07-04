@@ -16,6 +16,7 @@ The v1.2 problem statement defines the fixed office setup as 3 rooms, each with 
 - Alert rules for after-hours usage and rooms left fully ON
 - Discord commands for status, room checks, and usage
 - Clickable floorplan controls backed by local demo endpoints
+- Recent activity, simulator control, and rule-based recommendations
 - Optional OpenAI rewrite for friendlier Discord responses
 
 ## Architecture
@@ -50,8 +51,8 @@ Copy `.env.example` to `.env` where needed and fill only real secrets.
 ```env
 BACKEND_HOST=127.0.0.1
 BACKEND_PORT=8000
-SIMULATION_ENABLED=false
-SIMULATION_INTERVAL_SECONDS=15
+SIMULATION_ENABLED=true
+SIMULATION_INTERVAL_SECONDS=25
 OFFICE_HOURS_START=09:00
 OFFICE_HOURS_END=17:00
 
@@ -115,12 +116,16 @@ If `DISCORD_ALERT_CHANNEL_ID` is empty, proactive alerts are disabled gracefully
 
 ## API Endpoints
 
+Live simulated device data is served by the FastAPI backend at `GET /api/state`.
+A sample response is included at `docs/sample-device-state.json` for reference only.
+
 - `GET /api/state`: full state
 - `GET /api/devices`: all 15 devices
 - `GET /api/rooms`: all room summaries
 - `GET /api/rooms/{roomId}`: one room, with aliases such as `drawing`, `work1`, `work2`
 - `GET /api/usage`: total watts, room-wise watts, estimated kWh, active count
 - `GET /api/alerts`: active and recent alerts
+- `GET /api/events`: last 20 backend device/reset events
 - `WS /ws`: full-state live updates
 
 Local demo endpoints:
@@ -157,6 +162,19 @@ Examples: `!waste 3`, `!toggle work1 fan1`, `!roomon work2`, `!roomoff drawing`
 
 The bot also supports proactive alert posting when `DISCORD_ALERT_CHANNEL_ID` is configured. It polls `GET /api/alerts` every 45 seconds and posts each new alert once.
 
+## Dashboard Enhancements
+
+The React dashboard includes product-level demo features beyond the minimum panels:
+
+- Runtime simulator ON/OFF control
+- Top consumer insight for the highest-consuming room or rooms
+- Rule-based energy recommendation panel
+- Recent activity feed from the backend event log
+- Alert severity labels with local acknowledge buttons
+- Clickable floorplan controls for every fan and light
+
+All device state, alerts, simulator metadata, and activity events still come from the FastAPI backend. The frontend only keeps local UI display state for acknowledged-alert visual state.
+
 ## Alert Rules
 
 - After-hours alert: any device ON outside `09:00` to `17:00`.
@@ -165,9 +183,16 @@ The bot also supports proactive alert posting when `DISCORD_ALERT_CHANNEL_ID` is
 
 ## Simulation Logic
 
-For the final demo, keep `SIMULATION_ENABLED=false` and click fans/lights directly on the floorplan to change device states manually. This keeps the dashboard and Discord responses stable and predictable.
+By default, the backend automatically simulates dummy device data:
 
-If `SIMULATION_ENABLED=true`, the backend simulator runs every `SIMULATION_INTERVAL_SECONDS`, toggles exactly one device, updates timestamps and `onSince`, recalculates watts and kWh, evaluates alerts, and broadcasts only when state actually changes. The default interval is `15` seconds.
+```env
+SIMULATION_ENABLED=true
+SIMULATION_INTERVAL_SECONDS=25
+```
+
+When enabled, the backend simulator runs every `SIMULATION_INTERVAL_SECONDS`, toggles exactly one of the 15 devices, updates `lastChanged` and `onSince`, recalculates watts and kWh, evaluates alerts, and broadcasts the new full state through WebSocket. It does not reset the office and does not maintain separate simulator-only data.
+
+For a controlled final demo, set `SIMULATION_ENABLED=false` and restart the backend. Then click fans/lights directly on the floorplan or use Discord bot commands to change device states manually. Dashboard clicks, Discord controls, demo endpoints, and automatic simulation all update the same FastAPI in-memory backend state.
 
 Energy estimate:
 
@@ -177,14 +202,15 @@ estimatedKwhToday += currentTotalWatts * elapsedHours / 1000
 
 ## Hardware Schematic
 
-Use `docs/hardware-wiring.md` to build a representative one-room Wokwi schematic with ESP32 inputs for 2 fans and 3 lights. Save the screenshot as `docs/diagrams/hardware-schematic.png`.
+Use `docs/hardware-wiring.md` to explain the representative one-room Wokwi circuit with ESP32 inputs for 2 fans and 3 lights. The actual Wokwi screenshot is included at `docs/diagrams/hardware-schematic.png`.
 
 The ESP32/Wokwi schematic is a hardware concept deliverable only. The running software demo does not read live ESP32 data; live device state comes from the FastAPI in-memory simulator and the local toggle endpoints. A real ESP32 integration is listed as a future improvement.
 
 ## Diagrams
 
-- System diagram: `docs/diagrams/system-diagram.png`
-- Hardware schematic screenshot: `docs/diagrams/hardware-schematic.png`
+- System architecture diagram: `docs/diagrams/system-architecture.png`
+- System flow diagram: `docs/diagrams/system-diagram.png`
+- Representative hardware schematic: `docs/diagrams/hardware-schematic.png`
 
 The diagrams are not Mermaid-based.
 
@@ -196,7 +222,7 @@ Recommended demo settings:
 
 ```env
 SIMULATION_ENABLED=false
-SIMULATION_INTERVAL_SECONDS=15
+SIMULATION_INTERVAL_SECONDS=25
 ```
 
 Then click fans and lights directly on the dashboard floorplan to toggle devices at predictable moments. The dashboard calls the backend toggle endpoint, so Discord bot responses stay in sync with the same backend state.

@@ -11,7 +11,7 @@ This is a representative one-room schematic for Wokwi. It shows how one room wit
 - 5 current-limiting resistors for LEDs
 - Optional ACS712-style current sensor connected to an ADC pin
 
-## Pin Mapping
+## ESP32 GPIO Assignment
 
 | ESP32 Pin | Signal | Simulated Device |
 | --- | --- | --- |
@@ -24,7 +24,7 @@ This is a representative one-room schematic for Wokwi. It shows how one room wit
 | 3.3V | Power rail | Switch pull-up side |
 | GND | Ground rail | Common ground |
 
-## Connection List
+## Wiring Steps
 
 - Connect one side of each switch to 3.3V.
 - Connect the other side of each switch to its assigned GPIO pin.
@@ -33,12 +33,12 @@ This is a representative one-room schematic for Wokwi. It shows how one room wit
 - Connect all grounds together.
 - If using a current sensor, connect sensor analog output to GPIO 34 and sensor ground to ESP32 ground.
 
-## Electrical Reasoning
+## How The Circuit Works
 
-The switches represent whether each fan or light circuit is ON. The ESP32 reads each switch as a digital HIGH/LOW signal and sends the state upstream in a real deployment. The optional current sensor represents measuring actual load current for power estimation.
+The switches represent whether each fan or light circuit is ON. The ESP32 reads each switch as a digital HIGH/LOW signal and could send the state upstream in a real deployment. The optional current sensor represents measuring actual load current for power estimation.
 
 ## Safety Note
 
 Real AC lights and fans must never be connected directly to an ESP32 or Arduino. A real installation needs relay modules or contactors, opto-isolation, fuses/breakers, correct wire gauges, current sensors rated for the load, and qualified electrical supervision.
 
-Save the final Wokwi screenshot as `docs/diagrams/hardware-schematic.png`.
+The Wokwi circuit screenshot is saved at `docs/diagrams/hardware-schematic.png`.

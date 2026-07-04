@@ -31,13 +31,15 @@ button {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
   gap: 12px;
   margin-bottom: 16px;
 }
 
 .connection,
 .toggle-error,
-.last-updated {
+.last-updated,
+.simulator-toggle {
   display: inline-flex;
   align-items: center;
   min-height: 36px;
@@ -70,6 +72,32 @@ button {
   color: #b42318;
   border-color: #fecaca;
   background: #fff1f2;
+}
+
+.simulator-toggle {
+  gap: 8px;
+  cursor: pointer;
+}
+
+.simulator-toggle strong {
+  font-size: 13px;
+}
+
+.simulator-toggle.on {
+  color: #0f7a43;
+  border-color: #bbf7d0;
+  background: #f0fdf4;
+}
+
+.simulator-toggle.off {
+  color: #9a5b00;
+  border-color: #fed7aa;
+  background: #fff7ed;
+}
+
+.simulator-toggle:disabled {
+  opacity: 0.7;
+  cursor: progress;
 }
 
 .dashboard-grid {
@@ -1163,6 +1191,7 @@ button {
 
 .metric span,
 .changed,
+.duration,
 .alert-row small {
   color: #667085;
   font-size: 12px;
@@ -1170,6 +1199,35 @@ button {
 
 .metric strong {
   font-size: 20px;
+}
+
+.insight-panel p,
+.recommendation-panel p,
+.panel-empty {
+  margin: 0;
+  color: #52606d;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.insight-panel p strong {
+  color: #111827;
+}
+
+.insight-panel small {
+  display: block;
+  margin-top: 8px;
+  color: #667085;
+  font-size: 12px;
+}
+
+.recommendation-panel {
+  border-color: #c7d2fe;
+  background: #f8faff;
+}
+
+.activity-panel {
+  margin-top: 18px;
 }
 
 .room-power-list {
@@ -1221,7 +1279,9 @@ button {
 }
 
 .alert-row {
-  display: flex;
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr) auto;
+  align-items: start;
   gap: 10px;
   padding: 12px;
   border-radius: 8px;
@@ -1230,9 +1290,89 @@ button {
   color: #9a3412;
 }
 
+.alert-row.is-acknowledged {
+  opacity: 0.68;
+  background: #f8fafc;
+  border-color: #d9e1ea;
+}
+
 .alert-row p {
   margin: 4px 0;
   color: #17202a;
+}
+
+.alert-row small {
+  display: block;
+  overflow-wrap: anywhere;
+}
+
+.alert-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.alert-meta strong {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #ffedd5;
+  color: #9a3412;
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.alert-row button {
+  min-height: 32px;
+  padding: 6px 10px;
+  border: 1px solid #fed7aa;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #9a3412;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.alert-row button:disabled {
+  cursor: default;
+  color: #667085;
+  border-color: #d9e1ea;
+}
+
+.activity-list {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 4px;
+  scrollbar-width: thin;
+}
+
+.activity-row {
+  display: grid;
+  grid-template-columns: minmax(86px, auto) minmax(150px, 1fr);
+  gap: 4px 10px;
+  flex: 0 0 300px;
+  min-height: 70px;
+  padding: 10px;
+  border: 1px solid #e4e7ec;
+  border-radius: 8px;
+  background: #f8fafc;
+}
+
+.activity-row span {
+  color: #667085;
+  font-size: 12px;
+}
+
+.activity-row p {
+  margin: 0;
+  color: #17202a;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
 }
 
 .demo-actions {
@@ -1304,7 +1444,7 @@ button {
 
 .device-row {
   display: grid;
-  grid-template-columns: 22px minmax(110px, 1fr) 64px 60px 90px;
+  grid-template-columns: 22px minmax(110px, 1fr) 64px 60px 92px 90px;
   align-items: center;
   gap: 10px;
   min-height: 42px;
@@ -1336,6 +1476,10 @@ button {
 
 .watts {
   font-weight: 800;
+}
+
+.duration {
+  white-space: nowrap;
 }
 
 .loading-screen {
@@ -1390,6 +1534,7 @@ button {
   .demo-panel {
     grid-column: 1 / -1;
   }
+
 }
 
 @media (max-width: 760px) {
@@ -1428,11 +1573,20 @@ button {
   }
 
   .device-row {
-    grid-template-columns: 22px minmax(90px, 1fr) 58px 44px;
+    grid-template-columns: 22px minmax(90px, 1fr) 58px 44px 78px;
   }
 
   .changed {
     display: none;
+  }
+
+  .alert-row {
+    grid-template-columns: 22px minmax(0, 1fr);
+  }
+
+  .alert-row button {
+    grid-column: 2;
+    justify-self: start;
   }
 }
 
@@ -1462,6 +1616,10 @@ button {
   }
 
   .watts {
+    display: none;
+  }
+
+  .duration {
     display: none;
   }
 }

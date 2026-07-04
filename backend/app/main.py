@@ -40,20 +40,33 @@ def require_local_demo_request(request: Request) -> None:
         raise HTTPException(status_code=403, detail="Demo endpoints are available only from localhost.")
 
 
+def start_simulator_task() -> None:
+    global simulator, simulator_task
+    if simulator_task and not simulator_task.done():
+        return
+    simulator = DeviceSimulator(store, settings.simulation_interval_seconds, publish_state)
+    simulator_task = asyncio.create_task(simulator.run())
+
+
+def stop_simulator_task() -> None:
+    global simulator, simulator_task
+    if simulator:
+        simulator.stop()
+    if simulator_task and not simulator_task.done():
+        simulator_task.cancel()
+    simulator = None
+    simulator_task = None
+
+
 @app.on_event("startup")
 async def startup() -> None:
-    global simulator, simulator_task
     if settings.simulation_enabled:
-        simulator = DeviceSimulator(store, settings.simulation_interval_seconds, publish_state)
-        simulator_task = asyncio.create_task(simulator.run())
+        start_simulator_task()
 
 
 @app.on_event("shutdown")
 async def shutdown() -> None:
-    if simulator:
-        simulator.stop()
-    if simulator_task:
-        simulator_task.cancel()
+    stop_simulator_task()
 
 
 @app.get("/api/state")
@@ -89,6 +102,11 @@ async def get_alerts():
     return store.get_alerts()
 
 
+@app.get("/api/events")
+async def get_events():
+    return store.get_events()
+
+
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     await websockets.connect(websocket)
@@ -100,7 +118,7 @@ async def websocket_endpoint(websocket: WebSocket):
 async def demo_toggle(device_id: str):
     previous_revision = store.revision
     try:
-        state = store.toggle_device(device_id)
+        state = store.toggle_device(device_id, source="manual")
     except KeyError as exc:
         raise HTTPException(status_code=404, detail="Unknown device.") from exc
     await publish_if_changed(previous_revision)
@@ -111,7 +129,7 @@ async def demo_toggle(device_id: str):
 async def demo_set_device(device_id: str, body: SetDeviceRequest):
     previous_revision = store.revision
     try:
-        state = store.set_device(device_id, body.status)
+        state = store.set_device(device_id, body.status, source="manual")
     except KeyError as exc:
         raise HTTPException(status_code=404, detail="Unknown device.") from exc
     await publish_if_changed(previous_revision)
@@ -122,7 +140,7 @@ async def demo_set_device(device_id: str, body: SetDeviceRequest):
 async def demo_set_room_all_on(room_id: str):
     previous_revision = store.revision
     try:
-        state = store.set_room_status(room_id, "ON")
+        state = store.set_room_status(room_id, "ON", source="manual")
     except KeyError as exc:
         raise HTTPException(status_code=404, detail="Unknown room. Try: drawing, work1, or work2.") from exc
     await publish_if_changed(previous_revision)
@@ -133,7 +151,7 @@ async def demo_set_room_all_on(room_id: str):
 async def demo_set_room_all_off(room_id: str):
     previous_revision = store.revision
     try:
-        state = store.set_room_status(room_id, "OFF")
+        state = store.set_room_status(room_id, "OFF", source="manual")
     except KeyError as exc:
         raise HTTPException(status_code=404, detail="Unknown room. Try: drawing, work1, or work2.") from exc
     await publish_if_changed(previous_revision)
@@ -151,6 +169,20 @@ async def demo_trigger_after_hours_alert():
 @app.post("/api/demo/reset", dependencies=[Depends(require_local_demo_request)])
 async def demo_reset():
     previous_revision = store.revision
-    state = store.reset()
+    state = store.reset(record_event=True, source="manual")
+    await publish_if_changed(previous_revision)
+    return state
+
+
+@app.post("/api/demo/simulator/toggle", dependencies=[Depends(require_local_demo_request)])
+async def demo_toggle_simulator():
+    previous_revision = store.revision
+    currently_enabled = store.get_state().simulator_status.enabled
+    if currently_enabled:
+        stop_simulator_task()
+        state = store.set_simulator_enabled(False, source="manual")
+    else:
+        start_simulator_task()
+        state = store.set_simulator_enabled(True, source="manual")
     await publish_if_changed(previous_revision)
     return state
